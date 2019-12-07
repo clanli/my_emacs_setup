@@ -1,7 +1,5 @@
 ;; init.el --- Emacs configuration
 
-;; Set OSX function key as Meta
-
 
 ;; INSTALL PACKAGES
 ;; --------------------------------------
