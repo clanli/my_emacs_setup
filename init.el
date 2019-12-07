@@ -1,19 +1,53 @@
 ;; init.el --- Emacs configuration
 
+;; Set OSX function key as Meta
+
+
 ;; INSTALL PACKAGES
 ;; --------------------------------------
 
-
-;; Installera följande på hosten
-;; # apt install flake8 python-pip elpa-py-autopep8 python-autopep8
-;; # pip install jedi
 (require 'package)
-
+(add-to-list 'package-archives                                                                                                        
+             '("elpy" . "http://jorgenschaefer.github.io/packages/"))   
 (add-to-list 'package-archives
-       '("melpa" . "http://melpa.org/packages/") t)
+       '("melpa" . "https://melpa.org/packages/") t)
 
+;; activate all packages
 (package-initialize)
-(elpy-enable)
+
+;; fetch the list of packages available 
+(unless package-archive-contents
+  (package-refresh-contents))
+
+;; define list of packages to install
+(defvar myPackages
+  '(better-defaults
+    material-theme
+    auto-complete
+    exec-path-from-shell
+    django-manage django-snippets 
+    django-mode yaml-mode timonier 
+    elpy
+    pyenv-mode))
+
+;; install all packages in list
+(mapc #'(lambda (package)
+    (unless (package-installed-p package)
+      (package-install package)))
+      myPackages)
+
+;; Use shell's $PATH
+(exec-path-from-shell-copy-env "PATH")
+
+;; BASIC CUSTOMIZATION
+;; --------------------------------------
+
+(setq inhibit-startup-message t)   ;; hide the startup message
+(load-theme 'material t)           ;; load material theme
+(global-linum-mode t)              ;; enable line numbers globally
+(setq linum-format "%4d \u2502 ")  ;; format line number spacing
+;; Allow hash to be entered  
+(global-set-key (kbd "M-3") '(lambda () (interactive) (insert "#")))
 
 (setq
    backup-by-copying t      ; don't clobber symlinks
@@ -24,41 +58,21 @@
    kept-old-versions 2
    version-control t)       ; use versioned backups
 
-;; auto close bracket insertion. New in emacs 24
-(electric-pair-mode 1)
-
-(setq inhibit-startup-message t) ;; hide the startup message
-(load-theme 'material t) ;; load material theme
-;;(load-theme 'deeper-blue t) ;; load material theme
-(global-linum-mode t) ;; enable line numbers globally
-
-(setq mouse-wheel-scroll-amount '(1 ((shift) . 1) ((control) . nil)))
- (setq mouse-wheel-progressive-speed nil)
-
-(require 'elpy)
 (elpy-enable)
-;;(elpy-use-ipython)
+(pyenv-mode)
+(setq python-shell-interpreter "ipython"
+      python-shell-interpreter-args "-i --simple-prompt")
 
-;; use flycheck not flymake with elpy
-(when (require 'flycheck nil t)
-  (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
-  (add-hook 'elpy-mode-hook 'flycheck-mode))
+(require 'auto-complete)
+(add-to-list 'ac-dictionary-directories "~/.emacs.d/ac-dict")
+(require 'auto-complete-config)
+(ac-config-default)
+(global-auto-complete-mode t)
 
-;; enable autopep8 formatting on save
-(require 'py-autopep8)
-(add-hook 'elpy-mode-hook 'py-autopep8-enable-on-save)
-
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   (quote
-    (material-theme dired-sidebar django-manage django-snippets django-mode py-autopep8 yaml-mode timonier kubernetes-tramp kubernetes json-mode flycheck evil elpy ein better-shell better-defaults bash-completion))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
+;; init.el ends here
