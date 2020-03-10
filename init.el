@@ -73,4 +73,6 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
+
+(normal-erase-is-backspace-mode 1)
 ;; init.el ends here
